@@ -242,6 +242,7 @@ async def manager_token(async_client, manager_user):
 @pytest.fixture
 def user_base_data():
     return {
+        "nickname": "user_john",
         "username": "john_doe_123",
         "email": "john.doe@example.com",
         "full_name": "John Doe",
