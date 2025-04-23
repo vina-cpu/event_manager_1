@@ -121,14 +121,17 @@ class UserService:
         user = await cls.get_by_email(session, email)
         if user:
             if user.email_verified is False:
+                logger.warning(f"User {email} credential is unverified")
                 return None
             if user.is_locked:
+                logger.warning(f"User {email} is a locked account")
                 return None
             if verify_password(password, user.hashed_password):
                 user.failed_login_attempts = 0
                 user.last_login_at = datetime.now(timezone.utc)
                 session.add(user)
                 await session.commit()
+                logger.info(f"User {email} successfully logged in")
                 return user
             else:
                 user.failed_login_attempts += 1
