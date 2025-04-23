@@ -89,6 +89,16 @@ async def db_session(setup_database):
             yield session
         finally:
             await session.close()
+            
+@pytest.fixture
+async def user_token(async_client, user):
+    response = await async_client.post("/login", data={
+        "username": user.email,
+        "password": "MySuperPassword$1234",        
+    })
+    
+    assert response.status_code == 200, f"Login failed with status code {response.status_code} and response {response.json()}"
+    return response.json()["access_token"]
 
 @pytest.fixture(scope="function")
 async def locked_user(db_session):
