@@ -14,6 +14,7 @@ Fixtures:
 """
 
 # Standard library imports
+import uuid
 from builtins import range
 from datetime import datetime
 from unittest.mock import patch
@@ -278,7 +279,7 @@ def user_update_data():
 @pytest.fixture
 def user_response_data():
     return {
-        "id": "unique-id-string",
+        "id": uuid.UUID(str(uuid.uuid4())),
         "username": "testuser",
         "email": "test@example.com",
         "last_login_at": datetime.now(),
