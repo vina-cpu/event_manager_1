@@ -93,6 +93,7 @@ async def db_session(setup_database):
             
 @pytest.fixture
 async def user_token(async_client, user):
+    print(f"User details: email={user.email}, role={user.role}, password={user.hashed_password}")
     response = await async_client.post("/login/", data={
         "username": user.email,
         "password": "MySuperPassword$1234",        
@@ -129,7 +130,7 @@ async def user(db_session):
         "email": fake.email(),
         "hashed_password": hash_password("MySuperPassword$1234"),
         "role": UserRole.AUTHENTICATED,
-        "email_verified": False,
+        "email_verified": True,
         "is_locked": False,
     }
     user = User(**user_data)
@@ -200,6 +201,7 @@ async def admin_user(db_session: AsyncSession):
         last_name="Doe",
         hashed_password="securepassword",
         role=UserRole.ADMIN,
+        email_verified=True,
         is_locked=False,
     )
     db_session.add(user)
@@ -224,6 +226,7 @@ async def manager_user(db_session: AsyncSession):
         email="manager_user@example.com",
         hashed_password="securepassword",
         role=UserRole.MANAGER,
+        email_verified=True,
         is_locked=False,
     )
     db_session.add(user)

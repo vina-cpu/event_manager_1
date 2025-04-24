@@ -119,7 +119,11 @@ class UserService:
     @classmethod
     async def login_user(cls, session: AsyncSession, email: str, password: str) -> Optional[User]:
         user = await cls.get_by_email(session, email)
-        if user:
+        try:
+            user = await cls.get_by_email(session, email)
+            if not user:
+                logger.warning(f"User with email {email} does not exist.")
+                return None
             if user.email_verified is False:
                 logger.warning(f"User {email} credential is unverified")
                 return None
@@ -137,8 +141,13 @@ class UserService:
                 user.failed_login_attempts += 1
                 if user.failed_login_attempts >= settings.max_login_attempts:
                     user.is_locked = True
+                    logger.warning(f"User {email} account locked due to too many failed login attempts")
                 session.add(user)
                 await session.commit()
+        except Exception as e:
+            logger.error(f"Error logging in user {email}: {e}")
+            return None
+            
         return None
 
     @classmethod

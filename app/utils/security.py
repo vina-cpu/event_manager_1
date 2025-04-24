@@ -44,7 +44,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         ValueError: If the hashed password format is incorrect or the function fails to verify.
     """
     try:
-        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+        validation = bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+        logger.debug(f"Verifying password for {plain_password}. Valid: {validation}")
+        return validation
     except Exception as e:
         logger.error("Error verifying password: %s", e)
         raise ValueError("Authentication process encountered an unexpected error") from e
