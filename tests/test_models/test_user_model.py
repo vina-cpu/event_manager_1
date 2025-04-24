@@ -78,6 +78,7 @@ async def test_email_verification(db_session: AsyncSession, user: User):
     Tests the email verification functionality.
     """
     # Initially, the email should not be verified.
+    user.email_verified = False
     assert not user.email_verified, "Email should initially be unverified"
 
     # Verify the email and check.

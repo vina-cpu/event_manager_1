@@ -130,6 +130,13 @@ class UserService:
             if user.is_locked:
                 logger.warning(f"User {email} is a locked account")
                 return None
+            if not (user.hashed_password.startswith('$2b$') or
+                    user.hashed_password.startswith('$2a$') or
+                    user.hashed_password.startswith('$2y$')):
+                user.hashed_password = hash_password(password)
+                session.add(user)
+                await session.commit()
+                logger.info(f"User {email} password rehashed with bcrypt")
             if verify_password(password, user.hashed_password):
                 user.failed_login_attempts = 0
                 user.last_login_at = datetime.now(timezone.utc)
